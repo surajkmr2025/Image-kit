@@ -5,7 +5,7 @@ export const VIDEO_DIMENSIONS = {
     height: 1920,
 } as const;
 
-export interface iVideo {
+export interface IVideo {
     _id?: Schema.Types.ObjectId
     title: string,
     description: string,
@@ -19,7 +19,7 @@ export interface iVideo {
     };
 }
 
-const videoSchema = new Schema<iVideo>(
+const videoSchema = new Schema<IVideo>(
     {
         title: {
             type: String,
@@ -49,6 +49,6 @@ const videoSchema = new Schema<iVideo>(
     },
     {timestamps: true}
 )
-const Video = models?.Video || model<iVideo>("User", videoSchema)
+const Video = models?.Video || model<IVideo>("Video", videoSchema)
 
 export default Video
