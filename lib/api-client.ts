@@ -1,6 +1,6 @@
 import { IVideo } from "@/models/Video"
 
-export type VideoFormData = Omit<IVideo, "_id">
+export type VideoFormData = Omit<IVideo, "_id" | "user">
 
 type FetchOptions = {
     method? : "GET" | "POST" | "PUT" | "DELETE"

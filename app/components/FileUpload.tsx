@@ -7,18 +7,21 @@ import {
     // ImageKitUploadNetworkError,
     upload,
 } from "@imagekit/next";
+import { log } from "console";
 import { useState } from "react";
 import { toast } from "sonner";
 
 interface FileUploadProps {
     onSuccess: (res: unknown) => void
     onProgress?: (progress: number) => void
+    onUploadStateChange?: (uploading: boolean) => void
     fileType?: "image" | "video"
 }
 
 const FileUpload = ({
     onSuccess,
     onProgress,
+    onUploadStateChange,
     fileType
 }: FileUploadProps) => {
     const [uploading, setUploading] = useState(false);
@@ -50,10 +53,10 @@ const FileUpload = ({
         if (!file || !validateFile(file)) return
 
         setUploading(true)
+        onUploadStateChange?.(true)
 
         try {
             const authRes = await fetch('/api/auth/imagekit-auth')
-
             if (!authRes.ok) {
                 throw new Error("Failed to get upload authentication");
             }
@@ -85,6 +88,7 @@ const FileUpload = ({
         }
         finally {
             setUploading(false)
+            onUploadStateChange?.(false)
             input.value = "";
         }
     }
