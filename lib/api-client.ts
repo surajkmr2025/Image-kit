@@ -1,11 +1,11 @@
-import { IVideo } from "@/models/Video"
+import type { IVideo } from "@/models/Video"
 
 export type VideoFormData = Omit<IVideo, "_id" | "user">
 
 type FetchOptions = {
-    method? : "GET" | "POST" | "PUT" | "DELETE"
+    method?: "GET" | "POST" | "PUT" | "DELETE"
     body?: unknown
-    headers? :Record<string, string>
+    headers?: Record<string, string>
 }
 
 class ApiClient {
@@ -13,24 +13,28 @@ class ApiClient {
         endpoint: string,
         options: FetchOptions = {}
     ): Promise<T> {
-        const {method = "GET", body, headers = {}} = options
+        const { method = "GET", body, headers = {} } = options
 
         const defaultHeaders = {
-            "Content-Type": 'application/json',
+            "Content-Type": "application/json",
             ...headers,
         }
 
-        const response = await fetch(`/api${endpoint}`, {
+        const baseUrl = typeof window === "undefined"
+            ? process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
+            : ""
+
+        const response = await fetch(`${baseUrl}/api${endpoint}`, {
             method,
             headers: defaultHeaders,
-            body: body ? JSON.stringify(body) : undefined
+            body: body ? JSON.stringify(body) : undefined,
         })
 
-        if(!response.ok) {
+        if (!response.ok) {
             throw new Error(await response.text())
         }
 
-        return response.json()
+        return response.json() as Promise<T>
     }
 
     async getVideos() {
@@ -40,7 +44,7 @@ class ApiClient {
     async createVideo(videoData: VideoFormData) {
         return this.fetch('/videos', {
             method: "POST",
-            body: videoData
+            body: videoData,
         })
     }
 }
