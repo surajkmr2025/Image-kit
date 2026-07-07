@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/db";
 import VideoModel, { type IVideo } from "@/models/Video";
 import VideoCard from "@/app/components/VideoCard";
+import LogoutButton from "../components/LogoutButton";
 
 type DashboardVideo = Omit<IVideo, "user"> & {
   _id?: string;
@@ -70,6 +71,9 @@ export default async function DashboardPage() {
             ))}
           </section>
         )}
+      </div>
+      <div>
+        <LogoutButton />
       </div>
     </main>
   );
