@@ -1,3 +1,4 @@
+import "@/models/User";
 import { connectToDatabase } from "@/lib/db";
 import VideoModel, { type IVideo } from "@/models/Video";
 import VideoCard from "@/app/components/VideoCard";
