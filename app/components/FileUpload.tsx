@@ -30,6 +30,9 @@ const FileUpload = ({
     //optional validation
 
     const validateFile = (file: File) => {
+
+        console.log("fileType prop:", fileType);
+        console.log("file.type:", file.type);
         if (fileType === 'video') {
             if (!file.type.startsWith('video/')) {
                 setError("Please upload a valid video file")
@@ -44,9 +47,13 @@ const FileUpload = ({
     }
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        if(uploading) return;
+        if (uploading) return;
         const input = e.target;
         const file = e.target.files?.[0]
+
+        console.log(file);
+        console.log("Name:", file?.name);
+        console.log("Type:", file?.type);
 
         setError(null)
 
@@ -79,9 +86,9 @@ const FileUpload = ({
             onSuccess(res)
         } catch (error) {
             toast.error(
-                error instanceof Error 
-                ? error.message
-                : "Upload failed"
+                error instanceof Error
+                    ? error.message
+                    : "Upload failed"
             )
 
             console.log("Upload failed", error)

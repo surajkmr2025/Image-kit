@@ -13,6 +13,8 @@ export interface IVideo {
   videoUrl: string;
   thumbnailUrl: string;
   controls?: boolean;
+  videoFileId: string;
+  thumbnailFileId: string;
   transformation?: {
     height: number;
     width: number;
@@ -48,6 +50,15 @@ const videoSchema = new Schema<IVideo>(
     controls: {
       type: Boolean,
       default: true,
+    },
+    videoFileId: {
+      type: String,
+      required: true,
+    },
+
+    thumbnailFileId: {
+      type: String,
+      required: true,
     },
     transformation: {
       height: { type: Number, default: VIDEO_DIMENSIONS.height },
