@@ -6,6 +6,7 @@ import { connectToDatabase } from "@/lib/db";
 import VideoModel, { type IVideo } from "@/models/Video";
 import VideoCard from "@/app/components/VideoCard";
 import LogoutButton from "../components/LogoutButton";
+import DeleteButton from "../components/DeleteButton";
 
 type DashboardVideo = Omit<IVideo, "user"> & {
   _id?: string;
@@ -64,10 +65,15 @@ export default async function DashboardPage() {
         ) : (
           <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {videos.map((video) => (
-              <VideoCard
-                key={video._id?.toString() ?? video.title}
-                video={video}
-              />
+                <div>
+                    <VideoCard
+                      key={video._id?.toString() ?? video.title}
+                      video={video}
+                    />
+                    <div className="mt-3 flex justify-end">
+                        <DeleteButton id={video._id!.toString()} />
+                    </div>
+                </div>
             ))}
           </section>
         )}

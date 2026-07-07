@@ -47,6 +47,12 @@ class ApiClient {
             body: videoData,
         })
     }
+
+    async deleteVideo(id: string) {
+        return this.fetch(`/videos/${id}`, {
+            method: "DELETE",
+        });
+    }
 }
 
 export const apiClient = new ApiClient()
