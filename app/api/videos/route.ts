@@ -4,10 +4,22 @@ import Video, { IVideo, VIDEO_DIMENSIONS } from "@/models/Video";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await connectToDatabase();
-    const videos = await Video.find({}).sort({ createdAt: -1 }).lean();
+    const search = request.nextUrl.searchParams.get("search");
+
+    const query = search
+      ? {
+          title: {
+            $regex: search,
+            $options: "i",
+          },
+        }
+      : {};
+    const videos = await Video.find(query)
+    .sort({ createdAt: -1 })
+    .lean();
 
     if (!videos || videos.length === 0) {
       return NextResponse.json([], { status: 200 });

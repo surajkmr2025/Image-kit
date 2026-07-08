@@ -14,10 +14,30 @@ type VideoListItem = Omit<IVideo, "user"> & {
   updatedAt?: Date;
 };
 
-export default async function HomePage() {
+interface HomePageProps {
+  searchParams: Promise<{
+    search?: string;
+  }>;
+}
+
+export default async function HomePage({
+  searchParams,
+}: HomePageProps) {
+
   await connectToDatabase();
 
-  const videos = await VideoModel.find()
+  const { search } = await searchParams;
+
+  const query = search
+    ? {
+      title: {
+        $regex: search,
+        $options: "i",
+      },
+    }
+    : {};
+
+  const videos = await VideoModel.find(query)
     .populate("user", "name email")
     .sort({ createdAt: -1 })
     .lean<VideoListItem[]>();
@@ -25,6 +45,28 @@ export default async function HomePage() {
   return (
     <main className="min-h-screen bg-base-200 px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-7xl flex-col gap-8">
+        <form
+          action="/"
+          className="flex flex-col gap-3 sm:flex-row sm:items-center"
+        >
+          <input
+            type="text"
+            name="search"
+            defaultValue={search}
+            placeholder="Search videos..."
+            className="input input-bordered w-full"
+          />
+
+          <button className="btn btn-primary">
+            Search
+          </button>
+
+          {search && (
+            <a href="/" className="btn btn-outline">
+              Clear
+            </a>
+          )}
+        </form>
         <section className="text-center sm:text-left">
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
             Discover

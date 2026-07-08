@@ -37,8 +37,11 @@ class ApiClient {
         return response.json() as Promise<T>
     }
 
-    async getVideos() {
-        return this.fetch<IVideo[]>('/videos')
+    async getVideos(search?: string) {
+        const query = search
+            ? `/videos?search=${encodeURIComponent(search)}`
+            : '/videos';
+        return this.fetch<IVideo[]>('/query')
     }
 
     async createVideo(videoData: VideoFormData) {
