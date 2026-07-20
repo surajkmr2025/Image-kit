@@ -68,6 +68,11 @@ const videoSchema = new Schema<IVideo>(
   },
   { timestamps: true },
 );
+
+videoSchema.index({ createdAt: -1 });
+videoSchema.index({ user: 1, createdAt: -1 });
+videoSchema.index({ title: 1 });
+
 const Video = models?.Video || model<IVideo>("Video", videoSchema);
 
 export default Video;

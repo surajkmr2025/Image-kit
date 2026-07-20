@@ -41,7 +41,7 @@ class ApiClient {
         const query = search
             ? `/videos?search=${encodeURIComponent(search)}`
             : '/videos';
-        return this.fetch<IVideo[]>('/query')
+        return this.fetch<IVideo[]>(query)
     }
 
     async createVideo(videoData: VideoFormData) {
