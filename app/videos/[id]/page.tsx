@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import { Video as ImageKitVideo } from "@imagekit/next";
 import { connectToDatabase } from "@/lib/db";
 import VideoModel, { type IVideo } from "@/models/Video";
 
@@ -56,12 +55,11 @@ export default async function VideoPage({ params }: VideoPageProps) {
       <div className="mx-auto flex max-w-6xl flex-col gap-8">
         <div className="overflow-hidden rounded-3xl border border-base-300 bg-base-100 shadow-2xl">
           <div className="aspect-video w-full bg-base-300">
-            <ImageKitVideo
+            <video
               src={video.videoUrl}
               controls={video.controls ?? true}
               className="h-full w-full object-cover"
-              width={video.transformation?.width ?? 1080}
-              height={video.transformation?.height ?? 1920}
+              preload="metadata"
             />
           </div>
 
