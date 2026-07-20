@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { connectToDatabase } from "@/lib/db";
+import { imagekit } from "@/lib/imagekit";
 import VideoModel, { type IVideo } from "@/models/Video";
 
 interface VideoPageProps {
@@ -49,6 +50,10 @@ export default async function VideoPage({ params }: VideoPageProps) {
   }
 
   const uploaderName = video.user?.name || video.user?.email || "Anonymous";
+  const signedVideoUrl = imagekit.url({
+    src: video.videoUrl,
+    signed: true,
+  });
 
   return (
     <main className="min-h-screen bg-base-200 px-4 py-8 sm:px-6 lg:px-8">
@@ -56,7 +61,7 @@ export default async function VideoPage({ params }: VideoPageProps) {
         <div className="overflow-hidden rounded-3xl border border-base-300 bg-base-100 shadow-2xl">
           <div className="aspect-video w-full bg-base-300">
             <video
-              src={video.videoUrl}
+              src={signedVideoUrl}
               controls={video.controls ?? true}
               className="h-full w-full object-cover"
               preload="metadata"
