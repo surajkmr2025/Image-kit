@@ -14,6 +14,9 @@ type VideoListItem = Omit<IVideo, "user"> & {
   updatedAt?: Date;
 };
 
+const escapeRegex = (value: string) =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 interface HomePageProps {
   searchParams: Promise<{
     search?: string;
@@ -27,11 +30,12 @@ export default async function HomePage({
   await connectToDatabase();
 
   const { search } = await searchParams;
+  const safeSearch = search?.trim().slice(0, 80);
 
-  const query = search
+  const query = safeSearch
     ? {
       title: {
-        $regex: search,
+        $regex: escapeRegex(safeSearch),
         $options: "i",
       },
     }

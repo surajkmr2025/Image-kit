@@ -4,22 +4,42 @@ import Video, { IVideo, VIDEO_DIMENSIONS } from "@/models/Video";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
+const IMAGEKIT_ENDPOINT = process.env.NEXT_PUBLIC_URL_ENDPOINT;
+
+const escapeRegex = (value: string) =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const isSafeText = (value: unknown, maxLength: number) =>
+  typeof value === "string" &&
+  value.trim().length > 0 &&
+  value.trim().length <= maxLength;
+
+const isImageKitUrl = (value: unknown) =>
+  typeof value === "string" &&
+  !!IMAGEKIT_ENDPOINT &&
+  value.startsWith(IMAGEKIT_ENDPOINT);
+
+const isSafeFileId = (value: unknown) =>
+  typeof value === "string" &&
+  value.trim().length > 0 &&
+  value.trim().length <= 256;
+
 export async function GET(request: NextRequest) {
   try {
     await connectToDatabase();
-    const search = request.nextUrl.searchParams.get("search");
+    const search = request.nextUrl.searchParams.get("search")?.trim().slice(0, 80);
 
     const query = search
       ? {
           title: {
-            $regex: search,
+            $regex: escapeRegex(search),
             $options: "i",
           },
         }
       : {};
     const videos = await Video.find(query)
-    .sort({ createdAt: -1 })
-    .lean();
+      .sort({ createdAt: -1 })
+      .lean();
 
     if (!videos || videos.length === 0) {
       return NextResponse.json([], { status: 200 });
@@ -49,18 +69,18 @@ export async function POST(request: NextRequest) {
     }
     await connectToDatabase();
 
-    const body: IVideo = await request.json();
+    const body: Partial<IVideo> = await request.json();
     if (
-      !body.title ||
-      !body.videoUrl ||
-      !body.description ||
-      !body.thumbnailUrl ||
-      !body.videoFileId ||
-      !body.thumbnailFileId
+      !isSafeText(body.title, 120) ||
+      !isSafeText(body.description, 2000) ||
+      !isImageKitUrl(body.videoUrl) ||
+      !isImageKitUrl(body.thumbnailUrl) ||
+      !isSafeFileId(body.videoFileId) ||
+      !isSafeFileId(body.thumbnailFileId)
     ) {
       return NextResponse.json(
         {
-          error: "Missing required fields",
+          error: "Invalid video payload",
         },
         { status: 400 },
       );
@@ -73,7 +93,7 @@ export async function POST(request: NextRequest) {
       transformation: {
         height: VIDEO_DIMENSIONS.height,
         width: VIDEO_DIMENSIONS.width,
-        quality: body.transformation?.quality ?? 100,
+        quality: Math.min(Math.max(body.transformation?.quality ?? 100, 1), 100),
       },
     };
 
