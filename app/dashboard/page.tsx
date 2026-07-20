@@ -9,6 +9,8 @@ import LogoutButton from "../components/LogoutButton";
 import DeleteButton from "../components/DeleteButton";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 type DashboardVideo = Omit<IVideo, "user"> & {
   _id?: string;
   user?: {
