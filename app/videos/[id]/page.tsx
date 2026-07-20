@@ -3,6 +3,8 @@ import { connectToDatabase } from "@/lib/db";
 import { imagekit } from "@/lib/imagekit";
 import VideoModel, { type IVideo } from "@/models/Video";
 
+export const dynamic = "force-dynamic";
+
 interface VideoPageProps {
   params: Promise<{
     id: string;
